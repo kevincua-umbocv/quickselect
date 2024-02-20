@@ -103,6 +103,30 @@ func (t Float64Slice) QuickSelect(k int) error {
 	return QuickSelect(t, k)
 }
 
+// The Float32Slice type attaches the QuickSelect interface to an array of
+// float32s. It implements Interface so that you can call QuickSelect(k) on any
+// Float32Slice.
+type Float32Slice []float32
+
+func (t Float32Slice) Len() int {
+	return len(t)
+}
+
+func (t Float32Slice) Less(i, j int) bool {
+	return t[i] < t[j] || isNaNFloat32(t[i]) && !isNaNFloat32(t[j])
+}
+
+func (t Float32Slice) Swap(i, j int) {
+	t[i], t[j] = t[j], t[i]
+}
+
+// QuickSelect(k) mutates the Float32Slice so that the first k elements in the
+// Float32Slice are the k smallest elements in the slice. This is a convenience
+// method for QuickSelect
+func (t Float32Slice) QuickSelect(k int) error {
+	return QuickSelect(t, k)
+}
+
 // The StringSlice type attaches the QuickSelect interface to an array of
 // float64s. It implements Interface so that you can call QuickSelect(k) on any
 // StringSlice.
@@ -129,6 +153,11 @@ func (t StringSlice) QuickSelect(k int) error {
 
 // isNaN is a copy of math.IsNaN to avoid a dependency on the math package.
 func isNaN(f float64) bool {
+	return f != f
+}
+
+// isNaN is a copy of math.IsNaN to avoid a dependency on the math package.
+func isNaNFloat32(f float32) bool {
 	return f != f
 }
 

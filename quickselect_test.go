@@ -181,6 +181,29 @@ func TestFloat64SliceQuickSelect(t *testing.T) {
 	}
 }
 
+func TestFloat32SliceQuickSelect(t *testing.T) {
+	fixtures := []struct {
+		Array     Float32Slice
+		ExpectedK []float32
+	}{
+		{[]float32{0.0, 14.3, 16.5, 29.7, 12.6, 2.4, 4.9, 4.2, 7.1, 29.3}, []float32{0.0, 2.4, 4.2, 4.9}},
+		{[]float32{9.3, 3.3, 2.7, 18.5}, []float32{9.3, 3.3, 2.7, 18.5}},
+		{[]float32{16.1, 29.3, -11.5, 25.3, 28.8, -14.7, 10.5, 4.4, 7.5, -27.9}, []float32{-27.9, -11.5, -14.7, 4.4}},
+	}
+
+	for _, fixture := range fixtures {
+		err := fixture.Array.QuickSelect(4)
+		if err != nil {
+			t.Errorf("Shouldn't have raised error: '%s'", err.Error())
+		}
+
+		resultK := fixture.Array[:4]
+		if !hasSameElementsFloat32(resultK, fixture.ExpectedK) {
+			t.Errorf("Expected smallest K elements to be '%s', but got '%s'", fixture.ExpectedK, resultK)
+		}
+	}
+}
+
 func hasSameElements(array1, array2 []int) bool {
 	elements := make(map[int]int)
 
@@ -202,6 +225,25 @@ func hasSameElements(array1, array2 []int) bool {
 
 func hasSameElementsFloat64(array1, array2 []float64) bool {
 	elements := make(map[float64]int)
+
+	for _, elem1 := range array1 {
+		elements[elem1]++
+	}
+
+	for _, elem2 := range array2 {
+		elements[elem2]--
+	}
+
+	for _, count := range elements {
+		if count != 0 {
+			return false
+		}
+	}
+	return true
+}
+
+func hasSameElementsFloat32(array1, array2 []float32) bool {
+	elements := make(map[float32]int)
 
 	for _, elem1 := range array1 {
 		elements[elem1]++
